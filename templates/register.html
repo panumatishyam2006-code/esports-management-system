@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Register - Arena Board{% endblock %}
+{% block content %}
+<section class="narrow">
+  <h1>Create your account</h1>
+  <form method="post" class="form">
+    <label>Username<input name="username" required minlength="3" maxlength="20" autocomplete="username"></label>
+    <label>Email<input type="email" name="email" required autocomplete="email"></label>
+    <label>Password<input type="password" name="password" required minlength="6" autocomplete="new-password"></label>
+    <label>I am a
+      <select name="role">
+        <option value="player">Player (join tournaments)</option>
+        <option value="organizer">Organizer (run tournaments)</option>
+      </select>
+    </label>
+    <button class="btn" type="submit">Create account</button>
+  </form>
+  <p class="muted">Already registered? <a href="{{ url_for('login') }}">Log in</a></p>
+</section>
+{% endblock %}

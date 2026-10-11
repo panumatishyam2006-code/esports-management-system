@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}New tournament - Arena Board{% endblock %}
+{% block content %}
+<section class="narrow">
+  <h1>Create a tournament</h1>
+  <form method="post" class="form">
+    <label>Tournament name<input name="name" required maxlength="80"></label>
+    <label>Game<input name="game" required maxlength="60" placeholder="e.g. Valorant, EA FC, Rocket League"></label>
+    <label>Start date<input type="date" name="start_date" required min="{{ today }}" value="{{ today }}"></label>
+    <label>Max players<input type="number" name="max_players" required min="2" max="64" value="8"></label>
+    <label>Description<textarea name="description" rows="3" maxlength="500"></textarea></label>
+    <button class="btn" type="submit">Create tournament</button>
+  </form>
+</section>
+{% endblock %}

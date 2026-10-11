@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% from "_macros.html" import points_table %}
+{% block title %}{{ t.name }} - Arena Board{% endblock %}
+{% block content %}
+<section class="t-head">
+  <div>
+    <span class="badge {{ t.status }}">{{ t.status|capitalize }}</span>
+    <h1>{{ t.name }}</h1>
+    <p class="muted">{{ t.game }} &middot; Starts {{ t.start_date }} &middot; Organized by {{ t.organizer }} &middot; {{ players|length }}/{{ t.max_players }} players</p>
+    {% if t.description %}<p>{{ t.description }}</p>{% endif %}
+  </div>
+  <div class="actions">
+    {% if g.user and g.user.role == 'player' and t.status == 'open' %}
+      {% if enrolled %}
+        <form method="post" action="{{ url_for('leave', tournament_id=t.id) }}" onsubmit="return confirm('Are you sure you want to withdraw from this tournament?');"><button class="btn ghost" type="submit">Leave tournament</button></form>
+      {% elif players|length < t.max_players %}
+        <form method="post" action="{{ url_for('enroll', tournament_id=t.id) }}" onsubmit="return confirm('Confirm enrollment in {{ t.name }}?');"><button class="btn" type="submit">Enroll</button></form>
+      {% else %}<span class="muted">Tournament is full</span>{% endif %}
+    {% elif not g.user and t.status == 'open' %}
+      <a class="btn" href="{{ url_for('login', next=request.path) }}">Log in to enroll</a>
+    {% endif %}
+    {% if is_owner and t.status == 'open' %}
+      <form method="post" action="{{ url_for('start_tournament', tournament_id=t.id) }}" onsubmit="return confirm('Start tournament? This will lock enrollments and generate all round-robin match fixtures.');"><button class="btn" type="submit">Start tournament</button></form>
+    {% endif %}
+    {% if is_owner %}
+      <form method="post" action="{{ url_for('delete_tournament', tournament_id=t.id) }}" onsubmit="return confirm('Are you sure you want to permanently delete this tournament? This cannot be undone.');"><button class="btn danger" type="submit">Delete tournament</button></form>
+    {% endif %}
+  </div>
+</section>
+
+<section>
+  <h2>Points table</h2>
+  {{ points_table(table, "No players have enrolled yet.") }}
+  <p class="muted note">A win earns 3 points and a draw earns 1. Ties are broken by wins, then score difference.</p>
+</section>
+
+{% if t.status == 'open' %}
+<section>
+  <h2>Enrolled players</h2>
+  {% if players %}
+  <ul class="plain">
+    {% for p in players %}
+    <li><a href="{{ url_for('player', username=p.username) }}">{{ p.username }}</a>
+      {% if is_owner %}
+        <form class="inline" method="post" action="{{ url_for('remove_player', tournament_id=t.id, user_id=p.id) }}" onsubmit="return confirm('Are you sure you want to remove {{ p.username }}?');">
+          <button class="link danger" type="submit">Remove</button></form>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}<p class="empty">No one has enrolled yet.</p>{% endif %}
+</section>
+{% else %}
+<section>
+  <h2>Fixtures and results</h2>
+  {% for rnd, ms in rounds.items() %}
+    <h3>Round {{ rnd }}</h3>
+    <div class="fixtures">
+    {% for m in ms %}
+      <div class="match {{ m.status }}" id="match-{{ m.id }}">
+        <span class="side">{{ m.name1 }}</span>
+        {% if is_owner %}
+          <form method="post" action="{{ url_for('record_result', match_id=m.id) }}" class="score-form">
+            <input type="number" min="0" name="score1" value="{{ m.score1 if m.score1 is not none }}" required aria-label="{{ m.name1 }} score">
+            <span>:</span>
+            <input type="number" min="0" name="score2" value="{{ m.score2 if m.score2 is not none }}" required aria-label="{{ m.name2 }} score">
+            <button class="btn small" type="submit">{{ 'Update' if m.status == 'played' else 'Save result' }}</button>
+          </form>
+        {% else %}
+          <span class="score">{% if m.status == 'played' %}{{ m.score1 }} : {{ m.score2 }}{% else %}vs{% endif %}</span>
+        {% endif %}
+        <span class="side right">{{ m.name2 }}</span>
+      </div>
+    {% endfor %}
+    </div>
+  {% endfor %}
+</section>
+{% endif %}
+{% endblock %}

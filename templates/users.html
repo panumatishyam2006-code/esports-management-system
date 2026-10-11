@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}User Accounts Directory - Arena Board{% endblock %}
+{% block content %}
+<section class="t-head">
+  <div>
+    <span class="badge ongoing">Super Admin Control</span>
+    <h1>User Accounts Directory</h1>
+    <p class="muted">Total registered accounts: {{ users|length }}. Full system management of all contender profiles, organizers, and administrative credentials.</p>
+  </div>
+</section>
+
+<section>
+  <div class="table-scroll">
+    <table class="points">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Role</th>
+          <th>Email</th>
+          <th>Registered</th>
+          <th style="text-align: right;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+          <tr>
+            <td>
+              <strong>{{ u.username }}</strong>
+              {% if u.id == g.user.id %}<span class="muted" style="margin-left: 6px;">(You)</span>{% endif %}
+            </td>
+            <td>
+              <span class="badge {{ 'ongoing' if u.role == 'organizer' else ('open' if u.role == 'player' else 'completed') }}">{{ u.role }}</span>
+            </td>
+            <td>{{ u.email }}</td>
+            <td class="muted">{{ u.created_at }}</td>
+            <td style="text-align: right;">
+              {% if u.id != g.user.id %}
+                <form method="post" action="{{ url_for('classic_admin_delete_user', user_id=u.id) }}" onsubmit="return confirm('Permanently delete account {{ u.username }}?');" style="display:inline;">
+                  <button class="link danger" type="submit">Delete</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

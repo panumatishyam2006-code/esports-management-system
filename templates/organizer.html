@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% from "_macros.html" import tournament_card %}
+{% block title %}My tournaments - Arena Board{% endblock %}
+{% block content %}
+<h1>My tournaments</h1>
+{% if tournaments %}
+  <div class="grid">{% for t in tournaments %}{{ tournament_card(t) }}{% endfor %}</div>
+{% else %}
+  <p class="empty">You haven't created a tournament yet. <a href="{{ url_for('create_tournament') }}">Create one</a>.</p>
+{% endif %}
+{% endblock %}

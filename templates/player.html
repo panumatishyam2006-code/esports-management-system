@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ p.username }} - Arena Board{% endblock %}
+{% block content %}
+<h1>{{ p.username }}</h1>
+<section class="stat-row">
+  <div><strong>#{{ stats.rank }}</strong><span>Rank</span></div>
+  <div><strong>{{ stats.points }}</strong><span>Points</span></div>
+  <div><strong>{{ stats.played }}</strong><span>Matches played</span></div>
+  <div><strong>{{ stats.wins }}</strong><span>Wins</span></div>
+  <div><strong>{{ stats.draws }}</strong><span>Draws</span></div>
+  <div><strong>{{ stats.losses }}</strong><span>Losses</span></div>
+</section>
+
+<section>
+  <h2>Tournaments</h2>
+  {% if entered %}
+  <ul class="plain">{% for t in entered %}
+    <li><a href="{{ url_for('tournament', tournament_id=t.id) }}">{{ t.name }}</a>
+      <span class="muted">{{ t.game }}</span> <span class="badge {{ t.status }}">{{ t.status|capitalize }}</span></li>
+  {% endfor %}</ul>
+  {% else %}<p class="empty">Not enrolled in any tournament yet. <a href="{{ url_for('tournaments') }}">Browse tournaments</a>.</p>{% endif %}
+</section>
+
+<section>
+  <h2>Recent matches</h2>
+  {% if recent %}
+  <ul class="plain">{% for m in recent %}
+    <li>{{ m.name1 }} <strong>{{ m.score1 }} : {{ m.score2 }}</strong> {{ m.name2 }}
+      <span class="muted">{{ m.tournament }}</span></li>
+  {% endfor %}</ul>
+  {% else %}<p class="empty">No matches played yet.</p>{% endif %}
+</section>
+{% endblock %}

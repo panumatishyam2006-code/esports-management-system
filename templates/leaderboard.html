@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% from "_macros.html" import points_table %}
+{% block title %}Leaderboard - Arena Board{% endblock %}
+{% block content %}
+<h1>Leaderboard</h1>
+<p class="muted">Rankings across every tournament. A win earns 3 points and a draw earns 1.</p>
+{{ points_table(table, "No players have registered yet.") }}
+{% endblock %}

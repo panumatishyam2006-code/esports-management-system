@@ -1,0 +1,34 @@
+{% macro points_table(rows, empty="No results yet. Standings appear after the first match is recorded.") %}
+  {% if rows %}
+  <div class="table-scroll">
+  <table class="points">
+    <thead><tr>
+      <th class="num">Rank</th><th>Player</th>
+      <th class="num">Played</th><th class="num">Wins</th><th class="num">Draws</th>
+      <th class="num">Losses</th><th class="num">Diff</th><th class="num pts">Points</th>
+    </tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr class="{{ 'lead' if r.rank == 1 and r.played > 0 }}">
+        <td class="num">{{ r.rank }}</td>
+        <td><a href="{{ url_for('player', username=r.username) }}">{{ r.username }}</a></td>
+        <td class="num">{{ r.played }}</td><td class="num">{{ r.wins }}</td>
+        <td class="num">{{ r.draws }}</td><td class="num">{{ r.losses }}</td>
+        <td class="num">{{ '%+d' % r.diff if r.diff else 0 }}</td>
+        <td class="num pts">{{ r.points }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% else %}<p class="empty">{{ empty }}</p>{% endif %}
+{% endmacro %}
+
+{% macro tournament_card(t) %}
+  <a class="t-card" href="{{ url_for('tournament', tournament_id=t.id) }}">
+    <span class="badge {{ t.status }}">{{ t.status|capitalize }}</span>
+    <strong>{{ t.name }}</strong>
+    <span>{{ t.game }}</span>
+    <span class="muted">Starts {{ t.start_date }} &middot; {{ t.players }}/{{ t.max_players }} players</span>
+  </a>
+{% endmacro %}

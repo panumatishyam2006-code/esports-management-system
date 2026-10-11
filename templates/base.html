@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Arena Board{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="{{ url_for('home') }}">Arena Board</a>
+    <nav>
+      <a href="{{ url_for('tournaments') }}">Tournaments</a>
+      <a href="{{ url_for('leaderboard') }}">Leaderboard</a>
+      {% if g.user %}
+        {% if g.user.role in ('organizer', 'admin') %}
+          <a href="{{ url_for('create_tournament') }}">New tournament</a>
+        {% endif %}
+        {% if g.user.role == 'admin' %}
+          <a href="{{ url_for('classic_admin_users') }}" style="color: #fbbf24; font-weight: 600;">User Accounts</a>
+        {% endif %}
+        <a href="{{ url_for('me') }}">{{ g.user.username }}</a>
+        <form method="post" action="{{ url_for('logout') }}"><button class="link" type="submit">Log out</button></form>
+      {% else %}
+        <a href="{{ url_for('login') }}">Log in</a>
+        <a class="btn small" href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}<p class="flash {{ cat }}" role="status">{{ msg }}</p>{% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="wrap site-footer">Technical training project: Esports Tournament Management System</footer>
+</body>
+</html>

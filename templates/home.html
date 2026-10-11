@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "_macros.html" import points_table, tournament_card %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <h1>Every match moves the table.</h1>
+    <p>Enroll in a tournament, play your fixtures, and see your rank update as soon as the organizer records the result.</p>
+    <div class="actions">
+      <a class="btn" href="{{ url_for('tournaments') }}">Browse tournaments</a>
+      {% if not g.user %}<a class="btn ghost" href="{{ url_for('register') }}">Create an account</a>{% endif %}
+    </div>
+  </div>
+  <div class="hero-board">
+    <h2>Top players overall</h2>
+    {{ points_table(top, "No matches played yet. The first result will start the table.") }}
+  </div>
+</section>
+
+<section>
+  <h2>Open for enrollment</h2>
+  {% if open_tournaments %}
+    <div class="grid">{% for t in open_tournaments %}{{ tournament_card(t) }}{% endfor %}</div>
+  {% else %}
+    <p class="empty">No tournaments are open right now. Check back soon{% if g.user and g.user.role == 'organizer' %}, or <a href="{{ url_for('create_tournament') }}">create one</a>{% endif %}.</p>
+  {% endif %}
+</section>
+{% endblock %}
