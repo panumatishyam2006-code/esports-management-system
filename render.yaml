@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: esports-management-system
+    env: python
+    buildCommand: "cd frontend && npm install && npm run build && cd .. && pip install -r requirements.txt gunicorn"
+    startCommand: "python -m gunicorn app:app"
+    plan: free
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.11.8

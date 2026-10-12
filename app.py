@@ -865,7 +865,19 @@ def not_found(_e):
     return render_template("error.html", code=404, message="That page doesn't exist."), 404
 
 
+@app.route("/<path:filename>")
+def serve_dist_static(filename):
+    target = os.path.join(DIST_DIR, filename)
+    if os.path.exists(target) and os.path.isfile(target):
+        return send_from_directory(DIST_DIR, filename)
+    if os.path.exists(os.path.join(DIST_DIR, "index.html")) and not filename.startswith("api/"):
+        return send_from_directory(DIST_DIR, "index.html")
+    abort(404)
+
+
 init_db()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("FLASK_DEBUG", "0") == "1"
+    app.run(host="0.0.0.0", port=port, debug=debug)
